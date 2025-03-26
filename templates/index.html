@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko" class="transition duration-300">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI 뉴스 요약 레터</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    };
+  </script>
+  <style>
+    .post-it {
+      background-color: #fefce8; /* 더 연한 파스텔 */
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.05);
+      border: 1px solid #d4d4d4;
+      transition: all 0.3s ease-in-out;
+<<<<<<< HEAD
+      color: #1f2937; /* 일반 모드 글자색 */
+=======
+>>>>>>> b49a9dfa4d3a3a7bfb7af17d2e8751f5a86743c7
+    }
+    .tag {
+      font-size: 0.75rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+      background-color: #bae6fd;
+      color: #0369a1;
+      display: inline-block;
+      margin-bottom: 0.5rem;
+    }
+    .dark .post-it {
+      background-color: #fef08a;
+      border-color: #e5e7eb;
+<<<<<<< HEAD
+      color: black; /* 다크모드에서도 검정 글씨 */
+=======
+>>>>>>> b49a9dfa4d3a3a7bfb7af17d2e8751f5a86743c7
+    }
+    .dark .tag {
+      background-color: #0ea5e9;
+      color: white;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-slate-100 to-white dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-gray-100 min-h-screen p-6 font-sans transition-all duration-300">
+  <div class="max-w-7xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-4xl font-bold text-slate-800 dark:text-white">✨ AI 뉴스 요약 레터</h1>
+      <button onclick="toggleDark()" class="bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded text-sm text-gray-800 dark:text-white">
+        🌓 다크모드
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <!-- 좌측 입력 -->
+      <div class="md:col-span-1">
+        <div class="bg-white dark:bg-gray-700 rounded-2xl p-6 shadow-md">
+          <label for="keyword" class="block text-md font-medium mb-2 text-slate-700 dark:text-white">🔍 키워드 입력</label>
+<<<<<<< HEAD
+          <input id="keyword" type="text" placeholder="예: 인공지능, 과기정통부, 클라우드"
+=======
+          <input id="keyword" type="text" placeholder="예: 인공지능, 경제, 총선"
+>>>>>>> b49a9dfa4d3a3a7bfb7af17d2e8751f5a86743c7
+                 class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-300 text-md dark:bg-gray-800 dark:text-white" />
+          <button onclick="summarize()"
+                  class="mt-4 w-full bg-black text-white hover:bg-gray-800 font-semibold py-2 px-4 rounded-lg text-sm transition-all duration-300">
+            뉴스 요약 생성
+          </button>
+        </div>
+      </div>
+
+      <!-- 우측 단신 카드 -->
+      <div id="summary" class="md:col-span-2 hidden rounded-2xl p-6 bg-white dark:bg-gray-700 shadow-inner">
+<<<<<<< HEAD
+        <h2 class="text-2xl font-bold mb-4">📰 종합 뉴스 단신</h2>
+=======
+        <h2 class="text-2xl font-bold mb-4">🧠 종합 뉴스 단신</h2>
+>>>>>>> b49a9dfa4d3a3a7bfb7af17d2e8751f5a86743c7
+        <ul id="summary-list" class="list-disc pl-5 space-y-2 text-lg text-gray-800 dark:text-gray-200"></ul>
+      </div>
+    </div>
+
+    <!-- 뉴스 포스트잇 스타일 -->
+    <div id="result" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+  </div>
+
+  <script>
+    function toggleDark() {
+      document.documentElement.classList.toggle("dark");
+    }
+
+    function detectCategory(text) {
+      if (text.includes("정치")) return "정치";
+      if (text.includes("경제") || text.includes("금융")) return "경제";
+      if (text.includes("기술") || text.includes("AI") || text.includes("인공지능")) return "기술";
+      if (text.includes("교육")) return "교육";
+      if (text.includes("사회")) return "사회";
+      return "일반";
+    }
+
+    async function summarize() {
+      const keyword = document.getElementById('keyword').value;
+      const summaryBox = document.getElementById('summary');
+      const summaryList = document.getElementById('summary-list');
+      const resultDiv = document.getElementById('result');
+
+      summaryBox.classList.remove("hidden");
+      summaryList.innerHTML = "<li class='text-gray-500'>⏳ 뉴스 요약 생성 중입니다...</li>";
+      resultDiv.innerHTML = "";
+
+      const res = await fetch('/summarize', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ keyword })
+      });
+
+      const data = await res.json();
+      const articles = data.summary.split("\n\n");
+
+      if (articles.length === 0 || data.summary.includes("관련 뉴스를 찾을 수")) {
+        summaryList.innerHTML = "<li class='text-red-500'>관련 뉴스를 찾을 수 없거나 본문을 불러오지 못했습니다.</li>";
+        return;
+      }
+
+      summaryList.innerHTML = "";
+      const articleDivs = [];
+
+      for (const article of articles) {
+        const lines = article.trim().split("\n");
+        if (lines[0].startsWith("🧠")) {
+          const points = lines[0].replace("🧠 ", "").split(/(?<=[.?!])\s+/);
+          for (const p of points) {
+            summaryList.innerHTML += `<li>${p}</li>`;
+          }
+          continue;
+        }
+
+        const title = lines[0]?.replace("📰 ", "") || "";
+        const link = lines[1]?.replace("📎 ", "") || "";
+        const press_date = lines[2]?.replace("🗞️ ", "") || "";
+        const summary = lines[3]?.replace("📝 ", "") || "";
+        const tag = detectCategory(summary);
+
+        articleDivs.push(`
+          <div class="post-it p-4 rounded-xl">
+            <span class="tag">${tag}</span>
+            <h3 class="text-lg font-bold mb-1">${title}</h3>
+            <a href="${link}" target="_blank" class="text-blue-700 text-sm underline break-all">${link}</a>
+            <div class="text-sm text-gray-600 mt-1 mb-2">${press_date}</div>
+            <p class="text-sm leading-relaxed break-words">${summary}</p>
+          </div>
+        `);
+      }
+
+      resultDiv.innerHTML = articleDivs.join("");
+    }
+  </script>
+</body>
+</html>
